@@ -24,10 +24,11 @@ use Jumbojett\OpenIDConnectClient;
 /**
  * Create an instance of OpenIDConnectClient with the configured settings
  */
-function get_oidc_client() {
+function get_oidc_client(): OpenIDConnectClient
+{
 	global $conf;
 	$config = $conf['OIDC'];
-	
+
 	// Create OIDC client
 	$oidc = new OpenIDConnectClient(
 		$config['issuer_url'] ?? '',
@@ -45,7 +46,7 @@ function get_oidc_client() {
 	}
 
 	// Set auth params
-	if ($array = json_decode($config['authparam'], true) !== null) {
+	if (($array = json_decode($config['authparam'], true)) !== null) {
 		$oidc->addAuthParam($array);
 	}
 
@@ -74,8 +75,8 @@ function can_resource_owner_credentials_grant() {
 /**
  * Redirect a user to the auth.php page if enabled
  * If disabled, returns false
- */ 
-function redirect_auth()
+ */
+function redirect_auth(): bool
 {
 	if (can_authorization_grant()) {
 		redirect(OIDC_PATH . 'auth.php');
@@ -88,6 +89,7 @@ function redirect_auth()
 /**
  * Get the preferred username of the resource owner
  * Resource owner is authenticated by the access token, stored in $oidc
+ * @throws \Jumbojett\OpenIDConnectClientException
  */
 function get_preferred_username(OpenIDConnectClient $oidc) {
 	global $conf;
@@ -106,6 +108,8 @@ function get_preferred_username(OpenIDConnectClient $oidc) {
 /**
  * Retrieve Piwigo user associated with the current OIDC resource owner
  * Resource owner is authenticated by the access token, stored in $oidc
+ * @throws \Jumbojett\OpenIDConnectClientException
+ * @throws Exception
  */
 function oidc_retrieve(OpenIDConnectClient $oidc, $force_registration = false) {
 	global $conf;
@@ -144,8 +148,9 @@ function oidc_retrieve(OpenIDConnectClient $oidc, $force_registration = false) {
 
 /**
  * Log the Piwigo user associated with the provided $token, through the current $oidc session
+ * @throws \Jumbojett\OpenIDConnectClientException
  */
-function oidc_login(OpenIDConnectClient $oidc, $token, $remember_me)
+function oidc_login(OpenIDConnectClient $oidc, $token, $remember_me): bool
 {
 	global $conf;
 
@@ -178,7 +183,7 @@ function oidc_login(OpenIDConnectClient $oidc, $token, $remember_me)
 	$data[$conf['user_fields']['id']] = $id;
 	$data[$conf['user_fields']['email']] = $email;
 	$data[$conf['user_fields']['username']] = $name;
-	
+
 	mass_updates(USERS_TABLE,
 				array(
 				'primary' => array($conf['user_fields']['id']),
@@ -196,9 +201,8 @@ function oidc_login(OpenIDConnectClient $oidc, $token, $remember_me)
 /**
  * Log out the currently logged in user and redirect to the login page
  */
-function oidc_logout()
+function oidc_logout(): void
 {
 	logout_user();
 	redirect_auth() or redirect('identification.php');
 }
-?>

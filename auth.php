@@ -15,7 +15,7 @@
    limitations under the License.
 */
 
-define('PHPWG_ROOT_PATH', '../../');
+const PHPWG_ROOT_PATH = '../../';
 
 require_once(PHPWG_ROOT_PATH.'include/common.inc.php');
 require_once(OIDC_PATH . 'oidc.php');
@@ -74,7 +74,7 @@ try {
     } else {
         $_SESSION['page_warnings'][] = l10n('Login not successful, try again.');
     }
-} catch (\Exception $e) {
+} catch (Exception $e) {
     // Test flow
     if (isset($_SESSION[OIDC_SESSION . '_auth'])) {
         unset($_SESSION[OIDC_SESSION . '_auth']);
@@ -87,4 +87,3 @@ try {
 }
 
 redirect(get_gallery_home_url());
-?>

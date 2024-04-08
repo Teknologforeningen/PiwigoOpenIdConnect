@@ -30,9 +30,9 @@ defined('PHPWG_ROOT_PATH') or die('Hacking attempt!');
 /// Define plugin constants
 global $prefixeTable;
 define('OIDC_ID',      basename(dirname(__FILE__)));
-define('OIDC_PATH' ,   PHPWG_PLUGINS_PATH . OIDC_ID . '/');
+const OIDC_PATH = PHPWG_PLUGINS_PATH . OIDC_ID . '/';
 define('OIDC_ADMIN',   get_root_url() . 'admin.php?page=plugin-' . OIDC_ID);
-define('OIDC_SESSION', OIDC_ID);
+const OIDC_SESSION = OIDC_ID;
 define('OIDC_TABLE',   $prefixeTable . "oidc");
 
 require(OIDC_PATH . 'oidc.php');
@@ -55,8 +55,9 @@ add_event_handler('ws_add_methods', 'oidc_api');
 /**
  * Generate a random password
  * based on: https://stackoverflow.com/questions/4356289/php-random-string-generator/31107425#31107425
+ * @throws Exception
  */
-function random_pass($length = 16, $keyspace = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_-=+;:,.?")
+function random_pass($length = 16, $keyspace = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_-=+;:,.?"): string
 {
 	$pieces = [];
     $max = mb_strlen($keyspace, '8bit') - 1;
@@ -79,7 +80,7 @@ function is_token_unexpired($access_token, $oidc): bool
 			$oidc->setAccessToken($access_token->access_token);
 			$oidc->requestUserInfo();
 			return true;
-		} catch (\Exception $e) {
+		} catch (Exception) {
 			return false;
 		}
 	}
@@ -90,7 +91,7 @@ function is_token_unexpired($access_token, $oidc): bool
  * Deserialize the database-stored contents of plugin settings
  * Override them with contents of conf.php
  */
-function oidc_init()
+function oidc_init(): void
 {
 	global $conf;
 	$conf['OIDC'] = safe_unserialize($conf['OIDC']);
@@ -104,7 +105,7 @@ function oidc_init()
 /**
  * Removes the Profile/Registration block.
  */
-function oidc_profile()
+function oidc_profile(): void
 {
 	global $template;
 
@@ -116,7 +117,7 @@ function oidc_profile()
 /**
  * Rewrite the login link in menu to link to the authorization code flow
  */
-function override_login_link()
+function override_login_link(): void
 {
 	global $template;
 
@@ -136,7 +137,7 @@ function override_login_link()
 /**
  * Rewrite the contents of the identification.php where applicable 
  */
-function oidc_identification()
+function oidc_identification(): void
 {
 	global $template;
 	global $conf;
@@ -177,7 +178,7 @@ function oidc_redirect()
 /**
  * Refresh the user, log out if expired
  */
-function refresh_login($user)
+function refresh_login($user): void
 {
 	global $conf;
 
@@ -220,7 +221,7 @@ function refresh_login($user)
 			$accessToken->expires = time() + $response->expires_in;
 		}
 		$_SESSION[OIDC_SESSION] = json_encode($accessToken);
-	} catch (\Exception $e) {
+	} catch (Exception $e) {
 		// Log out if an unknown problem arises
 		$page['errors'][] = $e->getMessage();
 		oidc_logout();
@@ -230,7 +231,7 @@ function refresh_login($user)
 /**
  * Use the given input to begin the resource owner credentials flow
  */
-function password_login($success, $username, $password, $remember_me)
+function password_login($success, $username, $password, $remember_me): bool
 {
 	// If user is logged in through another hook, skip
 	if ($success === true) {
@@ -258,7 +259,7 @@ function password_login($success, $username, $password, $remember_me)
 			$oidc->setAccessToken($response->access_token);
 			$success = oidc_login($oidc, $response, $remember_me);
 		}
-	} catch (\Exception $e) {
+	} catch (Exception $e) {
 		// silently fail
 	}
 
@@ -285,7 +286,7 @@ function oidc_admin_link($menu)
 /**
  * Delete users from the OIDC user table if applicable
  */
-function oidc_delete_user($user_id)
+function oidc_delete_user($user_id): void
 {
 	$query = '
 	DELETE FROM '.OIDC_TABLE.'
@@ -297,7 +298,7 @@ function oidc_delete_user($user_id)
 /**
  * Register WS API methods 
  */
-function oidc_api($params)
+function oidc_api($params): void
 {
 	$service = &$params[0];
 	$service->addMethod(
@@ -311,4 +312,3 @@ function oidc_api($params)
 		array('post_only' => true)
 	);
 }
-?>

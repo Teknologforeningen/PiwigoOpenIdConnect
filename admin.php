@@ -108,4 +108,3 @@ $template->assign(['redirect_url' => embellish_url(get_absolute_root_url() . OID
 
 $template->set_filename('oidc_config', realpath(OIDC_PATH . 'template/config.tpl'));
 $template->assign_var_from_handle('ADMIN_CONTENT', 'oidc_config');
-?>

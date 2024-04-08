@@ -26,7 +26,7 @@ require_once(OIDC_PATH . 'oidc.php');
  * @param mixed[] $params
  *    @option string access_token
  */
-function api_login($params, &$service)
+function api_login($params, &$service): true|PwgError
 {
     // Create OIDC service object
     $oidc = get_oidc_client();
@@ -41,5 +41,3 @@ function api_login($params, &$service)
     }
     return new PwgError(999, 'Invalid access token');
 }
-
-?>

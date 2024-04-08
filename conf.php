@@ -36,5 +36,3 @@ return [
     // 'password_reset_url' => '',
     // 'registration_url' => '',
 ];
-
-?>

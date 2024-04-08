@@ -19,7 +19,7 @@ defined('PHPWG_ROOT_PATH') or die('Hacking attempt!');
 
 class OpenIdConnect_maintain extends PluginMaintain
 {
-	private $default_conf = [
+	private array $default_conf = [
 		'issuer_url' => '',
 		'client_id' => '',
 		'client_secret' => '',
@@ -39,8 +39,8 @@ class OpenIdConnect_maintain extends PluginMaintain
 		'registration_url' => '',
 	];
 
-	function install($plugin_version, &$errors=array())
-	{
+	function install($plugin_version, &$errors=array()): void
+    {
 		global $conf;
 		global $prefixeTable;
 
@@ -53,18 +53,18 @@ class OpenIdConnect_maintain extends PluginMaintain
 		pwg_query($query);
 	}
 
-	function activate($plugin_version, &$errors = array())
-	{
+	function activate($plugin_version, &$errors = array()): void
+    {
 		$this->install($plugin_version, $errors);
 	}
 
-	function update($old_version, $new_version, &$errors=array())
-	{
+	function update($old_version, $new_version, &$errors=array()): void
+    {
 		$this->install($new_version, $errors);
 	}
 
-	function uninstall()
-	{
+	function uninstall(): void
+    {
 		global $prefixeTable;
 		
 		conf_delete_param('OIDC');
@@ -73,4 +73,3 @@ class OpenIdConnect_maintain extends PluginMaintain
 		pwg_query($query);
 	}
 }
-?>
