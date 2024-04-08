@@ -29,10 +29,11 @@ defined('PHPWG_ROOT_PATH') or die('Hacking attempt!');
 
 /// Define plugin constants
 global $prefixeTable;
+
 define('OIDC_ID',      basename(dirname(__FILE__)));
-const OIDC_PATH = PHPWG_PLUGINS_PATH . OIDC_ID . '/';
+define('OIDC_PATH', PHPWG_PLUGINS_PATH . OIDC_ID . '/');
 define('OIDC_ADMIN',   get_root_url() . 'admin.php?page=plugin-' . OIDC_ID);
-const OIDC_SESSION = OIDC_ID;
+define('OIDC_SESSION',  OIDC_ID);
 define('OIDC_TABLE',   $prefixeTable . "oidc");
 
 require(OIDC_PATH . 'oidc.php');
